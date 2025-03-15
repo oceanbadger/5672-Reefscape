@@ -53,6 +53,10 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public void stopIntake(boolean b) {
+    intakeMotor1.set(0);
+  }
+
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
    *

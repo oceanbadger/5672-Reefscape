@@ -8,6 +8,7 @@ package frc.robot;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.DriveForwardTime;
 import frc.robot.commands.ManageLimeLightCMD;
 //import frc.robot.commands.MoveArmCMD;
 import frc.robot.commands.SwerveJoystickCmd;
@@ -16,6 +17,7 @@ import frc.robot.commands.SwerveJoystickCmd;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
@@ -79,6 +81,7 @@ public class RobotContainer {
         () -> driverJoyStick.getRawAxis(OIConstants.kDriverXAxis),
         () -> driverJoyStick.getRawAxis(OIConstants.kDriverRotAxis),
         () -> !driverJoyStick.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx),
+        //() -> true,
         () -> driverJoyStick.getRawButton(OIConstants.kOrientToTargetIdx)
         )
       ); // by defualt will work on fields reference frame
@@ -93,6 +96,10 @@ public class RobotContainer {
 
   private void configureBindings() {
     //new JoystickButton(driverJoyStick, OIConstants.kMoveArmIdx ).whileTrue(new MoveArmCMD(armsub));
+
+    if (driverJoyStick.getRawButtonPressed(Constants.OIConstants.kDriveGyroResetButtonIdx)) {
+      swerveSub.resetHeading();
+    }
 
     //**** Intake Bindings  ******
 
@@ -144,8 +151,20 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
 
-    return new PathPlannerAuto("Auto_driveForwardAndMoveArm");
+    //return new PathPlannerAuto("Auto_driveForwardAndMoveArm");
+    return forwardPlace();
 
+  }
 
+  public Command forwardPlace() {
+    return Commands.sequence(
+      Commands.deadline(
+        new DriveForwardTime(swerveSub, 3.5, 0.8),
+        m_arm.moveArmToPosition(ArmConstants.positionRemoveAlgaeLow)), 
+      Commands.deadline(
+        Commands.waitSeconds(1.0), 
+        m_intake.moveIntake(-0.4)),
+      new DriveForwardTime(swerveSub, 0.5, -0.8)
+      ).finallyDo(() -> m_intake.stopIntake(true));
   }
 }

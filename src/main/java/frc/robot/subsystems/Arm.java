@@ -8,6 +8,7 @@ import frc.robot.Constants.ArmConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -37,13 +38,15 @@ public class Arm extends SubsystemBase {
 
     armMotor1.configure(armMotor1Config.
       inverted(true).
-      idleMode(IdleMode.kBrake), 
+      idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(50), 
       ResetMode.kNoResetSafeParameters, 
       PersistMode.kPersistParameters);
 
     armMotor2.configure(armMotor2Config.
       follow(armMotor1, true).
-      idleMode(IdleMode.kBrake), 
+      idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(50), 
       ResetMode.kNoResetSafeParameters, 
       PersistMode.kPersistParameters);
 
@@ -77,6 +80,9 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("arm encoder", encoder.get());
+    // SmartDashboard.putNumber("armLeft encoder", armMotor1.getEncoder().getPosition());
+    // SmartDashboard.putNumber("armRight encoder", armMotor2.getEncoder().getPosition());
   }
 
   @Override

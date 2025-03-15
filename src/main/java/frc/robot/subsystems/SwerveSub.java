@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
@@ -95,8 +95,11 @@ public class SwerveSub extends SubsystemBase {
 
 
     private RobotConfig config;
+
+    //private final AHRS gyro = new AHRS(AHRS.NavXComType.k);
     
-    private final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_UART);
+    private final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+    
     
     //new AHRS(SerialPort.Port.kUSB1);
 
@@ -246,6 +249,10 @@ public SwerveModulePosition[] getModulePositionsAuto() { // not updating
 
     public void zeroHeading(){
         gyro.reset();
+    }
+
+    public void resetHeading() {
+        odometer.resetPosition(getRotation2d(), getModulePositionsAuto(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
     }
 
     public double getHeading(){

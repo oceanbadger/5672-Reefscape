@@ -110,7 +110,9 @@ public class SwerveJoystickCmd extends Command {
     CurrentTurningSpeed = turningSpeed;
     CurrentOrientation = fieldOrientedFunction.get();
 
-
+    if (CurrentOrientation) {
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, swerveSubsystem.getRotation2d());
+    }
 
     // convert chassis speeds to individual module states; later to switch to velocity
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
